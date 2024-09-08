@@ -1,26 +1,26 @@
+import { Suspense } from "react";
 import "./App.css";
 import Quote from "./components/query/Quote";
-import { useEffect } from "react";
-import { useState } from "react";
+import { QueryClientProvider, QueryClient } from "react-query";
 
 function App() {
-  const [quote, setQuote] = useState(null);
-
-  useEffect(() => {
-    const fetchQuote = async () => {
-      const res = await fetch("https://api.quotable.io/random");
-      const data = await res.json();
-      setQuote(data);
-    };
-
-    fetchQuote();
-  }, []);
+  const client = new QueryClient({
+    defaultOptions: {
+      queries: {
+        suspense: true,
+      },
+    },
+  });
 
   return (
     <>
       <div>
-        <Quote quote={quote} />
-        <Quote quote={quote} />
+        <QueryClientProvider client={client}>
+          <Suspense fallback={<h1>Loading...</h1>}>
+            <Quote />
+            <Quote />
+          </Suspense>
+        </QueryClientProvider>
       </div>
     </>
   );
